@@ -3,7 +3,7 @@ import { Route, Routes, Navigate } from "react-router-dom"
 import { Toaster } from "react-hot-toast"
 import { Loader2 } from "lucide-react"
 import Layout from "./layout/layout.jsx"
-import Homepage from './page/Homepage'
+import HomePage from './page/HomePage'
 import SignUpPage from './page/SignUpPage'
 import LoginPage from './page/LoginPage'
 import { useAuthStore } from './store/useAuthStore'
@@ -33,7 +33,7 @@ const App = () => {
         <Route element={authUser ? <Layout /> : <Navigate to="/login" />}>
           <Route
             path='/'
-            element={<Homepage/>}
+            element={<HomePage/>}
           />
         </Route>
         
