@@ -2,7 +2,7 @@
   "name": "leetlab-root",
   "version": "1.0.0",
   "scripts": {
-    "build": "npm install --prefix frontend && npm run build --prefix frontend && npm install --prefix backend && cd backend && npx prisma generate && npx prisma db push",
+    "build": "npm install --include=dev --prefix frontend && npm run build --prefix frontend && npm install --prefix backend && cd backend && npx prisma generate && npx prisma db push",
     "start": "node backend/src/index.js"
   },
   "dependencies": {
