@@ -1,0 +1,145 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16.2
+    restart: always
+    container_name: judge0_postgres
+    environment:
+      POSTGRES_USER: judge0
+      POSTGRES_PASSWORD: judge0
+      POSTGRES_DB: judge0
+    ports:
+      - "5433:5432"
+    volumes:
+      - judge0_pgdata:/var/lib/postgresql/data
+      - judge0_box:/box
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U judge0 -d judge0"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    networks:
+      - judge0_network
+
+  redis:
+    image: redis:7.2.4
+    restart: always
+    container_name: judge0_redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+    networks:
+      - judge0_network
+
+  judge0:
+    image: judge0/judge0:1.13.0
+    restart: on-failure:5
+    container_name: judge0_server
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "2358:2358"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: judge0
+      DB_USER: judge0
+      DB_PASSWORD: judge0
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      RAILS_ENV: production
+    networks:
+      - judge0_network
+
+volumes:
+  judge0_pgdata:
+  judge0_box:
+
+networks:
+  judge0_network:
+    driver: bridge
+
+
+
+
+
+
+
+
+# version: '3.8'
+
+# services:
+#   postgres:
+#     image: postgres:16.2
+#     restart: always
+#     environment:
+#       POSTGRES_USER: judge0
+#       POSTGRES_PASSWORD: judge0
+#       POSTGRES_DB: judge0
+#     ports:
+#       - "5433:5432"
+#     volumes:
+#       - pgdata:/var/lib/postgresql/data
+#       - judge0box:/box 
+
+#   redis:
+#     image: redis:7.2.4
+#     restart: always
+#     ports:
+#       - "6379:6379"
+
+#   judge0:
+#     image: judge0/judge0:1.13.1
+#     restart: always
+#     depends_on:
+#       - postgres
+#       - redis
+#     ports:
+#       - "2358:2358"
+#     environment:
+#       DB_HOST: postgres
+#       DB_PORT: 5432
+#       DB_NAME: judge0
+#       DB_USER: judge0
+#       DB_PASSWORD: judge0
+#       REDIS_HOST: redis
+#       REDIS_PORT: 6379
+
+# volumes:
+#   pgdata:
+#   judge0box: 
+
+# services:
+ 
+#   judge0:
+#     image: judge0/judge0:1.13.1
+#     restart: always
+#     depends_on:
+#       - postgres
+#       - redis
+#     ports:
+#       - "2358:2358"
+#     volumes:
+#       - judge0box:/box          
+#     environment:
+#       DB_HOST: postgres
+#       DB_PORT: 5432
+#       DB_NAME: judge0
+#       DB_USER: judge0
+#       DB_PASSWORD: judge0
+#       REDIS_HOST: redis
+#       REDIS_PORT: 6379
+
+# volumes:
+#   pgdata:
+#   judge0box:                    
