@@ -52,10 +52,10 @@ const ProblemPage = () => {
   useEffect(() => {
     if (problem) {
       setCode(
-        problem.codeSnippets?.[selectedLanguage] || submission?.sourceCode || ""
+        problem.codeSnippet?.[selectedLanguage] || submission?.sourceCode || ""
       );
       setTestCases(
-        problem.testcases?.map((tc) => ({
+        problem.testCases?.map((tc) => ({
           input: tc.input,
           output: tc.output,
         })) || []
@@ -74,15 +74,15 @@ const ProblemPage = () => {
   const handleLanguageChange = (e) => {
     const lang = e.target.value;
     setSelectedLanguage(lang);
-    setCode(problem.codeSnippets?.[lang] || "");
+    setCode(problem.codeSnippet?.[lang] || "");
   };
 
   const handleRunCode = (e) => {
     e.preventDefault();
     try {
       const language_id = getLanguageId(selectedLanguage);
-      const stdin = problem.testcases.map((tc) => tc.input);
-      const expected_outputs = problem.testcases.map((tc) => tc.output);
+      const stdin = problem.testCases.map((tc) => tc.input);
+      const expected_outputs = problem.testCases.map((tc) => tc.output);
       executeCode(code, language_id, stdin, expected_outputs, id);
     } catch (error) {
       console.log("Error executing code", error);
@@ -110,26 +110,30 @@ const ProblemPage = () => {
             {problem.examples && (
               <>
                 <h3 className="text-xl font-bold mb-4">Examples:</h3>
-                {Object.entries(problem.examples).map(
-                  ([lang, example], idx) => (
+                {(Array.isArray(problem.examples) 
+                  ? problem.examples.map((example, idx) => ["Example " + (idx + 1), example])
+                  : Object.entries(problem.examples || {})
+                ).map(([lang, example], idx) => {
+                  if (!example) return null;
+                  return (
                     <div
                       key={lang}
                       className="bg-base-200 p-6 rounded-xl mb-6 font-mono"
                     >
                       <div className="mb-4">
                         <div className="text-indigo-300 mb-2 text-base font-semibold">
-                          Input:
+                          {lang} Input:
                         </div>
-                        <span className="bg-black/90 px-4 py-1 rounded-lg font-semibold text-white">
-                          {example.input}
+                        <span className="bg-black/90 px-4 py-1 rounded-lg font-semibold text-white break-all">
+                          {example.input || ""}
                         </span>
                       </div>
                       <div className="mb-4">
                         <div className="text-indigo-300 mb-2 text-base font-semibold">
                           Output:
                         </div>
-                        <span className="bg-black/90 px-4 py-1 rounded-lg font-semibold text-white">
-                          {example.output}
+                        <span className="bg-black/90 px-4 py-1 rounded-lg font-semibold text-white break-all">
+                          {example.output || ""}
                         </span>
                       </div>
                       {example.explanation && (
@@ -137,14 +141,14 @@ const ProblemPage = () => {
                           <div className="text-emerald-300 mb-2 text-base font-semibold">
                             Explanation:
                           </div>
-                          <p className="text-base-content/70 text-lg font-sem">
+                          <p className="text-base-content/70 text-lg font-semibold">
                             {example.explanation}
                           </p>
                         </div>
                       )}
                     </div>
-                  )
-                )}
+                  );
+                })}
               </>
             )}
 
@@ -239,7 +243,7 @@ const ProblemPage = () => {
             value={selectedLanguage}
             onChange={handleLanguageChange}
           >
-            {Object.keys(problem.codeSnippets || {}).map((lang) => (
+            {Object.keys(problem.codeSnippet || {}).map((lang) => (
               <option key={lang} value={lang}>
                 {lang.charAt(0).toUpperCase() + lang.slice(1)}
               </option>
