@@ -1,4 +1,4 @@
-﻿/**
+/**
  * seed-from-github.js
  *
  * Downloads the open-source problem dataset from GitHub and inserts
