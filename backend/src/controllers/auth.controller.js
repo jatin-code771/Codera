@@ -39,12 +39,16 @@ export const register = async(req,res)=>{
        process.env.JWT_SECRET,
        {expiresIn:"7d"} 
     )
+
+
     res.cookie("jwt",token,{
         httpOnly:true,
         sameSite:"none",
         secure:true,
         maxAge:1000 * 60 * 60 *24 * 7 // 7 days
     })
+
+    
         res.status(201).json({
             message:"User created successfully",
             user:{
